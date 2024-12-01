@@ -1,0 +1,61 @@
+<h1>Pomodoro Timer</h1>
+<p>Issue: <%= @issue.subject %> (<%= @issue.id %>)</p>
+<form id="log-time-form">
+  <label for="comments">Comments:</label>
+  <textarea id="comments" name="comments" rows="3"></textarea>
+  <br>
+  <button type="button" id="start-timer">Start Timer</button>
+  <button type="button" id="stop-timer" disabled>Stop Timer</button>
+</form>
+<p>Elapsed Time: <span id="elapsed-time">0:00</span></p>
+
+<script>
+  let timer;
+  let startTime;
+
+  document.getElementById('start-timer').addEventListener('click', () => {
+    startTime = new Date();
+    timer = setInterval(() => {
+      const now = new Date();
+      const elapsedSeconds = Math.floor((now - startTime) / 1000);
+      const minutes = Math.floor(elapsedSeconds / 60);
+      const seconds = elapsedSeconds % 60;
+      document.getElementById('elapsed-time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+    document.getElementById('start-timer').disabled = true;
+    document.getElementById('stop-timer').disabled = false;
+  });
+
+  document.getElementById('stop-timer').addEventListener('click', () => {
+    clearInterval(timer);
+    const endTime = new Date();
+    const elapsedHours = ((endTime - startTime) / 3600000).toFixed(2);
+    const comments = document.getElementById('comments').value;
+
+    // Send time entry to the server
+    fetch('<%= url_for(controller: "pomodoro_timer", action: "log_time") %>', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        issue_id: <%= @issue.id %>,
+        hours: elapsedHours,
+        comments: comments
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        alert('Time logged successfully!');
+      } else {
+        alert('Error logging time: ' + data.errors.join(', '));
+      }
+    })
+    .catch(error => console.error('Error:', error));
+    
+    document.getElementById('stop-timer').disabled = true;
+  });
+</script>
+

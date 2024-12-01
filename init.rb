@@ -1,8 +1,10 @@
 Redmine::Plugin.register :redmine_pomodoro_timer do
   name 'Redmine Pomodoro Timer plugin'
-  author 'Author name'
-  description 'This is a plugin for Redmine'
+  author 'H.Matsutani'
+  description 'A pomodoro timer for Redmine'
   version '0.0.1'
-  url 'http://example.com/path/to/plugin'
-  author_url 'http://example.com/about'
+  url 'https://github.com/Mattani/redmine_pomodoro_timer'
+  author_url 'https://x.com/mattani'
 end
+
+
