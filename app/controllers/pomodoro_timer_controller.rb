@@ -2,25 +2,9 @@ class PomodoroTimerController < ApplicationController
   before_action :find_issue, only: [:index, :log_time]
 
   def index
+    @issue = Issue.find(params[:issue_id])
+    @api_key = User.current.api_key
     # タイマー画面を表示
-  end
-
-  def log_time
-    @time_entry = TimeEntry.new(
-      project: @issue.project,
-      issue: @issue,
-      user: User.current,
-      hours: params[:hours],
-      activity_id: TimeEntryActivity.default.id, # 適切なアクティビティIDを設定
-      spent_on: Date.today,
-      comments: params[:comments]
-    )
-
-    if @time_entry.save
-      render json: { status: 'success', message: 'Time entry logged successfully.' }
-    else
-      render json: { status: 'error', errors: @time_entry.errors.full_messages }
-    end
   end
 
   private

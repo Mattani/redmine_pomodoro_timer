@@ -1,61 +1,126 @@
 <h1>Pomodoro Timer</h1>
-<p>Issue: <%= @issue.subject %> (<%= @issue.id %>)</p>
-<form id="log-time-form">
-  <label for="comments">Comments:</label>
-  <textarea id="comments" name="comments" rows="3"></textarea>
+<p>
+  <strong>Issue:</strong> <%= @issue.subject %> (<%= @issue.id %>)<br>
+  <strong>Project:</strong> <%= @issue.project.name %>
+</p>
+
+<form id="pomodoro-timer-form">
+  <!-- 作業分類選択 -->
+  <label for="activity">Activity:</label>
+  <select id="activity">
+    <option value="" disabled selected>Select activity</option>
+  </select>
+  <div>
+    <label for="comments">Comments:</label><br>
+    <textarea id="comments" name="comments" rows="3" style="width: 100%;"></textarea>
+  </div>
   <br>
-  <button type="button" id="start-timer">Start Timer</button>
-  <button type="button" id="stop-timer" disabled>Stop Timer</button>
+  <div>
+    <button type="button" id="start-timer" class="button">Start Timer</button>
+    <button type="button" id="stop-timer" class="button" disabled>Stop Timer</button>
+  </div>
 </form>
-<p>Elapsed Time: <span id="elapsed-time">0:00</span></p>
+
+<p>
+  <strong>Time Remaining:</strong> 
+  <span id="time-remaining">25:00</span>
+</p>
 
 <script>
-  let timer;
-  let startTime;
+  let timer; // Reference to the interval
+  const defaultDuration = 25 * 60 * 1000; // 25 minutes in milliseconds
+  let remainingTime = defaultDuration;
+
+  // 作業分類の取得とプルダウンの初期化
+  fetch('/redmine/enumerations/time_entry_activities.json', {
+    headers: {
+      'X-Redmine-API-Key': '<%= User.current.api_key %>' // APIキーを利用
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const activitySelect = document.getElementById('activity');
+    data.time_entry_activities.forEach(activity => {
+      const option = document.createElement('option');
+      option.value = activity.id;
+      option.textContent = activity.name;
+      activitySelect.appendChild(option);
+    });
+  })
+  .catch(error => console.error('Error fetching activities:', error));
+
+  const updateTimerDisplay = () => {
+    const minutes = Math.floor(remainingTime / 60000);
+    const seconds = Math.floor((remainingTime % 60000) / 1000);
+    document.getElementById('time-remaining').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   document.getElementById('start-timer').addEventListener('click', () => {
-    startTime = new Date();
+    const startTime = Date.now();
     timer = setInterval(() => {
-      const now = new Date();
-      const elapsedSeconds = Math.floor((now - startTime) / 1000);
-      const minutes = Math.floor(elapsedSeconds / 60);
-      const seconds = elapsedSeconds % 60;
-      document.getElementById('elapsed-time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      const elapsed = Date.now() - startTime;
+      remainingTime = defaultDuration - elapsed;
+
+      if (remainingTime <= 0) {
+        clearInterval(timer);
+        remainingTime = 0;
+        updateTimerDisplay();
+        logTime(); // Automatically log time when timer ends
+        alert("Pomodoro complete! Time has been logged.");
+        document.getElementById('stop-timer').disabled = true;
+        document.getElementById('start-timer').disabled = false;
+      } else {
+        updateTimerDisplay();
+      }
     }, 1000);
+
     document.getElementById('start-timer').disabled = true;
     document.getElementById('stop-timer').disabled = false;
   });
 
   document.getElementById('stop-timer').addEventListener('click', () => {
     clearInterval(timer);
-    const endTime = new Date();
-    const elapsedHours = ((endTime - startTime) / 3600000).toFixed(2);
-    const comments = document.getElementById('comments').value;
+    logTime(); // Log the time when stopped manually
+    // alert("Time has been logged.");
+    document.getElementById('stop-timer').disabled = true;
+    document.getElementById('start-timer').disabled = false;
+    remainingTime = defaultDuration; // Reset the timer
+    updateTimerDisplay();
+  });
 
-    // Send time entry to the server
-    fetch('<%= url_for(controller: "pomodoro_timer", action: "log_time") %>', {
+  const logTime = () => {
+    const issueId = <%= @issue.id %>;
+    const activityId = document.getElementById('activity').value;
+    const comments = document.getElementById('comments').value;
+    const hours = 0.5; // Fixed duration for a Pomodoro session
+    const apiKey = "<%= @api_key %>";
+
+    fetch('/redmine/time_entries.json', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Redmine-API-Key': apiKey,
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       },
       body: JSON.stringify({
-        issue_id: <%= @issue.id %>,
-        hours: elapsedHours,
-        comments: comments
+        time_entry:{
+          issue_id: issueId,
+          hours: hours,
+          activity_id: activityId,
+          comments: comments
+        }
       })
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 'success') {
-        alert('Time logged successfully!');
+    .then(response => {
+      if (response.ok) {
+        console.log('Time entry logged successfully.');
       } else {
-        alert('Error logging time: ' + data.errors.join(', '));
+        console.error('Error logging time entry.');
       }
     })
-    .catch(error => console.error('Error:', error));
-    
-    document.getElementById('stop-timer').disabled = true;
-  });
-</script>
+    .catch(error => console.error('Fetch error:', error));
+  };
 
+  // Initialize the timer display
+  updateTimerDisplay();
+</script>
