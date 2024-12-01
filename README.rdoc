@@ -1,3 +1,0 @@
-= redmine_pomodoro_timer
-
-Description goes here
