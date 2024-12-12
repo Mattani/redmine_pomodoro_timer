@@ -1,16 +1,35 @@
 class PomodoroTimerController < ApplicationController
   before_action :find_issue, only: [:index, :log_time]
+  layout 'base'
 
   def index
     @issue = Issue.find(params[:issue_id])
-    @api_key = User.current.api_key
+    @activities = TimeEntryActivity.where(active: true).map { |a| { id: a.id, name: a.name } }
     # タイマー画面を表示
+  end
+
+  def log_time
+    time_entry = TimeEntry.new(
+      issue: @issue,
+      user: User.current, # 現在ログインしているユーザー
+      hours: params[:hours],
+      activity_id: params[:activity_id],
+      comments: params[:comments],
+      spent_on: Date.today
+    )
+
+    if time_entry.save
+      render json: { success: true, message: 'Time entry logged successfully.' }, status: :ok
+    else
+      render json: { success: false, message: 'Failed to log time entry.', errors: time_entry.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private
 
   def find_issue
-    @issue = Issue.find(params[:issue_id])
+    @issue = Issue.find_by_id(params[:issue_id])
+    render json: { success: false, message: 'Issue not found.' }, status: :not_found unless @issue
   end
 end
 
