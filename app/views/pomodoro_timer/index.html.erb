@@ -43,3 +43,13 @@
 <div id="time-entries-container">
   <!-- Time entries will be dynamically loaded here -->
 </div>
+
+<!-- モーダル構造 -->
+<div id="commentModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background:#fff; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
+    <h3>コメントを入力してください</h3>
+    <textarea id="modalCommentInput" rows="4" style="width:100%;"></textarea>
+    <div style="margin-top:10px; text-align:right;">
+        <button id="modalSubmitButton">送信</button>
+        <button id="modalCancelButton">キャンセル</button>
+    </div>
+</div>
