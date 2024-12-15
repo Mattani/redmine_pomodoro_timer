@@ -1,8 +1,10 @@
 <% content_for :header_tags do %>
+  <meta name="base-url" content="<%= Redmine::Utils.relative_url_root %>">
   <meta name="issue-id" content="<%= @issue.id %>">
+  <%= javascript_include_tag '../plugin_assets/redmine_pomodoro_timer/javascripts/pomodoro_timer.js', defer: true %>
+  <%= stylesheet_link_tag '../plugin_assets/redmine_pomodoro_timer/stylesheets/pomodoro_timer.css' %>
 <% end %>
 
-<%= javascript_include_tag '../plugin_assets/redmine_pomodoro_timer/javascripts/pomodoro_timer.js', defer: true %>
 
 <h1>Pomodoro Timer</h1>
 <p>
@@ -11,8 +13,8 @@
 </p>
 
 <p>
-  <strong>Current Session:</strong> <span id="session-type">Work</span><br>
-  <strong>Time Remaining:</strong> <span id="time-remaining">25:00</span>
+  <span id="session-type">Work</span>
+  <span id="time-remaining">25:00</span>
 </p>
 
 <div>
@@ -38,3 +40,6 @@
   <textarea id="comments" rows="3" style="width: 100%;"></textarea>
 </div>
 
+<div id="time-entries-container">
+  <!-- Time entries will be dynamically loaded here -->
+</div>

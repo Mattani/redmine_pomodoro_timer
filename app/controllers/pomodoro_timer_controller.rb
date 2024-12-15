@@ -1,5 +1,5 @@
 class PomodoroTimerController < ApplicationController
-  before_action :find_issue, only: [:index, :log_time]
+  before_action :find_issue, only: [:index, :log_time, :time_entries]
   layout 'base'
 
   def index
@@ -23,6 +23,21 @@ class PomodoroTimerController < ApplicationController
     else
       render json: { success: false, message: 'Failed to log time entry.', errors: time_entry.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  def time_entries
+    @time_entries = @issue.time_entries.includes(:user, :activity)
+
+    render json: @time_entries.map { |entry|
+      {
+        id: entry.id,
+        hours: entry.hours,
+        comments: entry.comments,
+        activity: entry.activity.name,
+        user: entry.user.name,
+        spent_on: entry.spent_on
+      }
+    }
   end
 
   private

@@ -1,0 +1,71 @@
+#session-type {
+  width: 500px; /* #time-remainingと同じ幅 */
+  height: 50px; /* 高さは適宜調整 */
+  line-height: 50px; /* 高さに合わせて調整 */
+  font-size: 24px;
+  font-weight: bold;
+  text-align: left; /* ボックス内で左寄せ */
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  margin: 0 auto 10px; /* #time-remainingの上に中央寄せ */
+  padding-left: 10px; /* 左余白を追加 */
+  display: flex;
+  align-items: center; /* 垂直中央揃え */
+  transition: background-color 0.3s ease;
+}
+
+#time-remaining {
+  width: 500px;
+  height: 200px;
+  line-height: 120px;
+  text-align: center;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 120px;
+  font-weight: bold;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+  
+#time-remaining.work {
+  background-color: #f28b82; /* 赤っぽい色 */
+  color: white;
+}
+
+#time-remaining.rest {
+  background-color: #81c995; /* 緑色 */
+  color: white;
+}
+
+.time-entries-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  text-align: left;
+}
+
+.time-entries-table th, .time-entries-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.time-entries-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.time-entries-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.time-entries-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.time-entry .error {
+  color: red;
+}
