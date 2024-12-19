@@ -31,16 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
   })
   .catch(error => console.error('Error fetching activities:', error));
 
-  // タイマー関連の処理
-  let timer;
-  const defaultDuration = 25 * 60 * 1000; // 25分
-  let remainingTime = defaultDuration;
-
   const updateTimerDisplay = (isWork) => {
-    const minutes = Math.floor(remainingTime / 60000);
-    const seconds = Math.floor((remainingTime % 60000) / 1000);
-    timeRemaining.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  
+
+    setTimerDisplay(remainingTime);
     // タイマーの状態に応じてクラスを切り替える
     if (isWork) {
       timeRemaining.classList.add('work');
@@ -66,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const logTimeToServer = async (finalComment) => {
+    console.log('logTimeToServer started!');
     try {
       const response = await fetch(`${baseUrl}/pomodoro_timer/log_time`, {
         method: 'POST',
@@ -98,14 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // イベントリスナーの設定
-  // Workタイマーの場合
+  // Workタイマーの処理
   startButton.addEventListener('click', () => {
+    console.log('Work Timer started!');
     const startTime = Date.now();
     timer = setInterval(() => {
       const elapsed = Date.now() - startTime;
       remainingTime = defaultDuration - elapsed;
 
       if (remainingTime <= 0) {
+        console.log('Work Timer over!');
         clearInterval(timer);
         remainingTime = 0;
         updateTimerDisplay(true); // Workタイマーの表示更新
@@ -130,13 +126,17 @@ document.addEventListener('DOMContentLoaded', () => {
     stopButton.disabled = false;
   });
 
-  // Restタイマーの処理も同様に設定
+  // Restタイマーの処理
   const startRestTimer = () => {
+    console.log('Rest Timer started!');
     const restDuration = 5 * 60 * 1000; // 5分
     remainingTime = restDuration;
+    startButton.disabled = true;
+    stopButton.disabled = false;
   
     const startTime = Date.now();
   
+    setTimerDisplay(restDuration);
     updateTimerDisplay(false); // Restタイマーの初期状態を表示
     timeRemaining.classList.add('rest');
     timeRemaining.classList.remove('work');
@@ -146,12 +146,18 @@ document.addEventListener('DOMContentLoaded', () => {
       remainingTime = restDuration - elapsed;
       updateTimerDisplay(false);
   
+      // Rest time over
       if (remainingTime <= 0) {
+        console.log('Rest Timer over!');
+
         clearInterval(timer);
-        // alert('Rest time is over!');
-        timeRemaining.textContent = '00:00';
-        // timeRemaining.classList.remove('rest');
+        remainingTime = defaultDuration;
+        setTimerDisplay(remainingTime);
         updateSessionType(null);
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        console.log('Start Button Disabled:', startButton.disabled);
+        console.log('Remaining Time:', remainingTime);
       } else {
         updateTimerDisplay(false); // Rest中
       }
@@ -159,12 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }; 
 
   stopButton.addEventListener('click', () => {
+    console.log('Stop button clicked!');
     clearInterval(timer);
     showCommentModal(commentsInput.value);
     startButton.disabled = false;
     stopButton.disabled = true;
-    remainingTime = defaultDuration;
-    updateTimerDisplay(false); // Rest中
   });
 
   // TimeEntriesを取得する関数
@@ -208,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function showCommentModal(timerComment) {
+    console.log('Modal Activated!');
     const modal = document.getElementById("commentModal");
     const modalInput = document.getElementById("modalCommentInput");
 
@@ -219,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitCommentToTimeEntry() {
+    console.log('submitCommentToTimeEntry!');
     const modalInput = document.getElementById("modalCommentInput");
     const finalComment = modalInput.value;
   
@@ -233,11 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeCommentModal() {
-      const modal = document.getElementById("commentModal");
-      modal.style.display = "none";
+    console.log('Modal Closed!');
+    const modal = document.getElementById("commentModal");
+    modal.style.display = "none";
   }
 
   submitButton.addEventListener("click", () => {
+    console.log('Modal Submitted!');
+
     const modalInput = document.getElementById("modalCommentInput");
     const finalComment = modalInput.value;
 
@@ -248,7 +258,18 @@ document.addEventListener('DOMContentLoaded', () => {
     startRestTimer();
   });
 
+  function setTimerDisplay(Time){
+    const minutes = Math.floor(Time / 60000);
+    const seconds = Math.floor((Time % 60000) / 1000);
+    timeRemaining.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
   // 初期ロード
+  // タイマー関連の処理
+  let timer;
+  const defaultDuration = 25 * 60 * 1000; // 25分
+  let remainingTime = defaultDuration;
+    
   fetchTimeEntries();
   updateTimerDisplay(false);
   updateSessionType(null);
