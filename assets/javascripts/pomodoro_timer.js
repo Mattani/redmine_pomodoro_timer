@@ -3,7 +3,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const baseUrl = document.querySelector('meta[name="base-url"]').content;
   const startButton = document.getElementById('start-timer');
-  const stopButton = document.getElementById('stop-timer');
   const skipButton = document.getElementById('skip-timer');
   const pauseButton = document.getElementById('pause-timer');
   const activitySelect = document.getElementById('activity');
@@ -12,26 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const timeEntriesContainer = document.getElementById('time-entries-container');
   const issueId = document.querySelector('meta[name="issue-id"]').content
   const submitButton = document.getElementById("modalSubmitButton");
+  const continueButton = document.getElementById("modalContinueButton");
   const cancelButton = document.getElementById("modalCancelButton");
-
-  // 作業分類の取得とプルダウンの初期化
-  console.log('fetch time entry activities')
-  fetch('/redmine/enumerations/time_entry_activities.json', {
-    headers: {
-    'X-Redmine-API-Key': '<%= User.current.api_key %>' // APIキーを利用
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    const activitySelect = document.getElementById('activity');
-    data.time_entry_activities.forEach(activity => {
-    const option = document.createElement('option');
-    option.value = activity.id;
-    option.textContent = activity.name;
-    activitySelect.appendChild(option);
-    });
-  })
-  .catch(error => console.error('Error fetching activities:', error));
 
   const updateTimerDisplay = () => {
 
@@ -127,7 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   const startTimer = () => {
     console.log('startTimer invoked');
-    startButton.disabled = true;
+    startButton.disabled = true;  // startボタンをインアクティブにする
+    pauseButton.disabled = false; // pauseボタンをアクティブにする
+    skipButton.disabled = false;  // skipボタンをアクティブにする
     updateTimerDisplay();
     if (!currentTimerType || remainingTime <= 0) {
       console.error("Timer is not properly prepared!");
@@ -153,23 +136,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // イベントリスナーの設定
   // Workタイマーの処理
   startButton.addEventListener("click", () => {
-    startButton.disabled = true;
     skipButton.disabled = false;
     startTimer();
   });
 
+  skipButton.addEventListener('click', () => {
+    console.log('Skip button clicked!');
+    finishTimer();
+  });
+
   // ModalのSubmitでコメントを送信し、その後Rest Timerを開始する
   submitButton.addEventListener("click", () => {
+    console.log('Submit button clicked!');
     submitCommentToTimeEntry(); // コメントを送信
     closeCommentModal();
     prepareTimer("rest", 5 * 60 * 1000); // 5分のRest Timer
     startTimer();
   }); 
 
-  skipButton.addEventListener('click', () => {
-    console.log('Skip button clicked!');
-    finishTimer();
-  });
+  // ModalのContinueでもとのタイマーに戻る
+  continueButton.addEventListener("click", () => {
+    console.log('Continue button clicked!');
+    closeCommentModal();
+    console.log(remainingTime);
+    startTimer();
+  }); 
+
+  // ModalのCancelでRest Timerを開始する（コメントは送信しない）
+  cancelButton.addEventListener("click", () => {
+    console.log('Cancel button clicked!');
+    closeCommentModal();
+    prepareTimer("rest", 5 * 60 * 1000); // 5分のRest Timer
+    startTimer();
+  }); 
 
   // TimeEntriesを取得する関数
   const fetchTimeEntries = async () => {
