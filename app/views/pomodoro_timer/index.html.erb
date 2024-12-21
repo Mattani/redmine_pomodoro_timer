@@ -19,7 +19,6 @@
 
 <div>
   <button type="button" id="start-timer" class="button">Start</button>
-  <button type="button" id="stop-timer" class="button">Stop</button>
   <button type="button" id="pause-timer" class="button" disabled>Pause</button>
   <button type="button" id="skip-timer" class="button" disabled>Skip</button>
 </div>
@@ -45,11 +44,12 @@
 </div>
 
 <!-- モーダル構造 -->
-<div id="commentModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background:#fff; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
-    <h3>コメントを入力してください</h3>
+<div id="commentModal" style="display:none; position:fixed; top:70%; left:50%; transform:translate(-50%, -50%); z-index:1000; background:#fff; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
+    <h3>今回の作業のコメントを入力してください</h3>
     <textarea id="modalCommentInput" rows="4" style="width:100%;"></textarea>
     <div style="margin-top:10px; text-align:right;">
-        <button id="modalSubmitButton">送信</button>
+        <button id="modalSubmitButton">登録</button>
+        <button id="modalContinueButton">作業継続</button>
         <button id="modalCancelButton">キャンセル</button>
     </div>
 </div>
