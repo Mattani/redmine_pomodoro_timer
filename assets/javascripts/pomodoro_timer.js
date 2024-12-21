@@ -79,11 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.json();
 
       if (response.ok) {
-        // alert(result.message || 'Time entry logged successfully!');
         // 成功時にテーブルを更新
         await fetchTimeEntries();
-        // 準備しているタイマー（Rest）を開始
-        // startTimer();
       } else {
         alert(result.message || 'Failed to log time entry.');
       }
@@ -117,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // タイマーの初期状態を画面に反映
     if (type === "work") {
       updateTimerDisplay(true);  // Workタイマーの初期画面
-      updateSessionType(true);   // Work Session表示
+      updateSessionType(null);   // Next:Work Session表示
     } else if (type === "rest") {
       updateTimerDisplay(false); // Restタイマーの初期画面
       updateSessionType(false);  // Rest Session表示
@@ -131,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const startTimer = () => {
     console.log('startTimer invoked');
     startButton.disabled = true;
+    updateTimerDisplay();
     if (!currentTimerType || remainingTime <= 0) {
       console.error("Timer is not properly prepared!");
       return;
@@ -141,31 +139,16 @@ document.addEventListener('DOMContentLoaded', () => {
       remainingTime -= 1000; // 1秒減少
 
       // タイマーの表示更新
-      // if (currentTimerType === "work") {
-      //   updateTimerDisplay(true);
-      // } else if (currentTimerType === "rest") {
-      //   updateTimerDisplay(false);
-      // }
       updateTimerDisplay();
       // タイマー終了処理
       if (remainingTime <= 0) {
         clearInterval(timer);
         timer = null;
         finishTimer();
-        // if (currentTimerType === "work") {
-        //   console.log("Work session completed!");
-        //   showCommentModal(commentsInput.value);
-        // } else if (currentTimerType === "rest") {
-        //   console.log("Rest session completed!");
-        //   alert("Rest time is over!");
-        //   prepareTimer("work", 25 * 60 * 1000); // 次のWorkタイマー準備
-        // }
-
         currentTimerType = null; // 状態リセット
       }
     }, 990); // 1秒間隔
   };
-
 
   // イベントリスナーの設定
   // Workタイマーの処理
@@ -175,83 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
     startTimer();
   });
 
-  // startButton.addEventListener('click', () => {
-  //   console.log('Work Timer started!');
-  //   const startTime = Date.now();
-  //   timer = setInterval(() => {
-  //     const elapsed = Date.now() - startTime;
-  //     remainingTime = defaultDuration - elapsed;
-
-  //     if (remainingTime <= 0) {
-  //       console.log('Work Timer over!');
-  //       clearInterval(timer);
-  //       remainingTime = 0;
-  //       updateTimerDisplay(true); // Workタイマーの表示更新
-  //       showCommentModal(commentsInput.value);
-      
-  //       // モーダル送信後、Restタイマーを開始
-  //       submitButton.addEventListener("click", () => {
-  //         const modalInput = document.getElementById("modalCommentInput");
-  //         const finalComment = modalInput.value;
-      
-  //         submitCommentToTimeEntry(finalComment);
-  //         closeCommentModal();
-  //       });
-  //       startButton.disabled = false;
-  //       stopButton.disabled = true;
-  //     } else {
-  //       updateTimerDisplay(true); // Work中
-  //     }
-  //   }, 990);
-
-  //   startButton.disabled = true;
-  //   stopButton.disabled = false;
-  // });
-
-  // Restタイマーの処理
+  // ModalのSubmitでコメントを送信し、その後Rest Timerを開始する
   submitButton.addEventListener("click", () => {
     submitCommentToTimeEntry(); // コメントを送信
     closeCommentModal();
     prepareTimer("rest", 5 * 60 * 1000); // 5分のRest Timer
     startTimer();
   }); 
-
-  // const startRestTimer = () => {
-  //   console.log('Rest Timer started!');
-  //   const restDuration = 5 * 60 * 1000; // 5分
-  //   remainingTime = restDuration;
-  //   startButton.disabled = true;
-  //   stopButton.disabled = false;
-  
-  //   const startTime = Date.now();
-  
-  //   setTimerDisplay(restDuration);
-  //   updateTimerDisplay(false); // Restタイマーの初期状態を表示
-  //   timeRemaining.classList.add('rest');
-  //   timeRemaining.classList.remove('work');
-  
-  //   timer = setInterval(() => {
-  //     const elapsed = Date.now() - startTime;
-  //     remainingTime = restDuration - elapsed;
-  //     updateTimerDisplay(false);
-  
-  //     // Rest time over
-  //     if (remainingTime <= 0) {
-  //       console.log('Rest Timer over!');
-
-  //       clearInterval(timer);
-  //       remainingTime = defaultDuration;
-  //       setTimerDisplay(remainingTime);
-  //       updateSessionType(null);
-  //       startButton.disabled = false;
-  //       stopButton.disabled = true;
-  //       console.log('Start Button Disabled:', startButton.disabled);
-  //       console.log('Remaining Time:', remainingTime);
-  //     } else {
-  //       updateTimerDisplay(false); // Rest中
-  //     }
-  //   }, 990);
-  // }; 
 
   skipButton.addEventListener('click', () => {
     console.log('Skip button clicked!');
@@ -261,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // TimeEntriesを取得する関数
   const fetchTimeEntries = async () => {
     try {
-      
       const response = await fetch(`${baseUrl}/pomodoro_timer/time_entries/${issueId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch time entries');
@@ -331,14 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // TimeEntryにコメントを送信する
     logTimeToServer(finalComment);
-    // logTimeToServer(finalComment).then(() => {
-    //   // モーダルを非表示にする
-    //   closeCommentModal();
-    //   // 非同期処理完了後に準備しているタイマー（Rest）を開始
-    //   prepareTimer("rest", 5 * 60 * 1000); // 5分のRest Timer
-    //   startTimer();
-    // });
- 
   }
 
   function closeCommentModal() {
@@ -346,19 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById("commentModal");
     modal.style.display = "none";
   }
-
-  // submitButton.addEventListener("click", () => {
-  //   console.log('Modal Submitted!');
-
-  //   const modalInput = document.getElementById("modalCommentInput");
-  //   const finalComment = modalInput.value;
-
-  //   submitCommentToTimeEntry();
-  //   // モーダルを非表示にする
-  //   closeCommentModal();
-  //   // Rest Timerを開始する
-  //   // startRestTimer();
-  // });
 
   function setTimerDisplay(Time){
     const minutes = Math.floor(Time / 60000);
@@ -368,13 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 初期ロード
   // タイマー関連の処理
-  // let timer;
   const defaultDuration = 25 * 60 * 1000; // 25分
-  // let remainingTime = defaultDuration;
-    
   fetchTimeEntries();
-  // updateTimerDisplay(false);
-  updateSessionType(null);
   prepareTimer("work", defaultDuration);
 });
 
