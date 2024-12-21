@@ -40,6 +40,64 @@
   color: white;
 }
 
+/* コメント入力欄のコンテナ */
+.comments-container {
+  width: 50%;                   /* 他の要素と同じ幅 */
+  font-size: 16px;              /* フォントサイズ */
+  margin: 10px auto;            /* 上下中央寄せ */
+}
+
+/* コメントラベルのスタイル */
+.comments-container label {
+  display: block;               /* ラベルを独自行に表示 */
+  font-weight: bold;            /* 太字 */
+  margin-bottom: 5px;           /* ラベルと入力欄の間隔 */
+  color: #333;
+}
+
+/* コメント入力欄のスタイル */
+.comments-container textarea {
+  width: 100%;                  /* 親要素に合わせる */
+  padding: 8px;                 /* 内側の余白 */
+  font-family: inherit;         /* フォント継承 */
+  border: 1px solid #ddd;       /* 枠線 */
+  border-radius: 5px;           /* 角を丸く */
+  resize: vertical;             /* 垂直方向のリサイズを許可 */
+  box-sizing: border-box;       /* パディングを含めた幅 */
+}
+
+/* 全体のスタイル調整 */
+.info-bar {
+  display: flex;                /* 1行に表示 */
+  justify-content: space-between; /* 均等配置 */
+  align-items: center;          /* 垂直方向の揃え */
+  width: 50%;                   /* 全体の80%の幅 */
+  margin: 0 auto;               /* 中央寄せ */
+  padding: 10px;                /* 内側余白 */
+  font-size: 16px;              /* フォントサイズ */
+  border: 1px solid #ddd;       /* 枠線を追加 */
+  border-radius: 5px;           /* 角を丸く */
+  background-color: #f9f9f9;    /* 背景色 */
+}
+
+/* 各アイテムのスタイル */
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;                     /* ラベルと値の間隔 */
+}
+
+/* ラベルのスタイル */
+.label {
+  font-weight: bold;
+  color: #333;
+}
+
+/* 値のスタイル */
+.value {
+  font-weight: normal;
+}
+
 .time-entries-table {
   width: 100%;
   border-collapse: collapse;

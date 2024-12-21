@@ -203,6 +203,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const timeEntries = await response.json();
 
+      // Hoursの合計を計算
+      const totalHours = timeEntries.reduce((sum, entry) => sum + parseFloat(entry.hours || 0), 0);
+
+      // 合計を表示
+      const totalHoursElement = document.getElementById("hours-total-value");
+      totalHoursElement.textContent = totalHours.toFixed(1); 
+
+      const estimatedHours = document.querySelector('meta[name="issue-estimated-hours"]').content
+      const hoursPercentageElement = document.getElementById("hours-percentage");
+      // パーセンテージの計算と更新
+      if (estimatedHours > 0) {
+        const percentage = (totalHours / estimatedHours) * 100;
+        hoursPercentageElement.textContent = percentage.toFixed(0);
+      } else {
+        hoursPercentageElement.textContent = 'N/A';
+      }
+
       // 表形式で表示
       timeEntriesContainer.innerHTML = `
         <table class="time-entries-table">

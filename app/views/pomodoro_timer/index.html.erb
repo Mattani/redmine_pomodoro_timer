@@ -1,6 +1,7 @@
 <% content_for :header_tags do %>
   <meta name="base-url" content="<%= Redmine::Utils.relative_url_root %>">
   <meta name="issue-id" content="<%= @issue.id %>">
+  <meta name="issue-estimated-hours" content="<%= @issue.estimated_hours %>">
   <%= javascript_include_tag '../plugin_assets/redmine_pomodoro_timer/javascripts/pomodoro_timer.js', defer: true %>
   <%= stylesheet_link_tag '../plugin_assets/redmine_pomodoro_timer/stylesheets/pomodoro_timer.css' %>
 <% end %>
@@ -33,10 +34,21 @@
   </select>
 </div>
 
-<div>
+<div class="comments-container">
   <!-- コメント入力 -->
-  <label for="comments">Comments:</label><br>
-  <textarea id="comments" rows="3" style="width: 100%;"></textarea>
+  <label for="comments">コメント:</label>
+  <textarea id="comments" rows="3"></textarea>
+</div>
+
+<div id="hours-info" class="info-bar">
+  <div class="info-item">
+    <span class="label">予定工数:</span> 
+    <span id="estimated-hours-value" class="value"><%= @issue.estimated_hours || "N/A" %></span> 時間
+  </div>
+  <div class="info-item">
+    <span class="label">これまでの作業時間計:</span> 
+    <span id="hours-total-value" class="value">0</span> 時間 (<span id="hours-percentage" class="value">0</span> % )
+  </div>
 </div>
 
 <div id="time-entries-container">
