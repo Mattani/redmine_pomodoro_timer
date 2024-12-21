@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentTimerType = null; // 現在動作中のタイマータイプ ("work" または "rest")
   let timer = null;            // 現在動作中のタイマーインスタンス
   let remainingTime = 0;       // 現在の残り時間
+  let isPaused = false;        // ポーズ
+  let startTime;               // タイマー開始時刻
+  let preparedDuration;        // 準備したタイマーの長さ
   
   /**
    * 次のタイマーの準備を行う関数
@@ -90,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 次のタイマーの準備
     currentTimerType = type;
+    preparedDuration = duration;
     remainingTime = duration;
 
     // タイマーの初期状態を画面に反映
@@ -108,21 +112,28 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   const startTimer = () => {
     console.log('startTimer invoked');
+    console.log('isPaused=', isPaused);
+    console.log('remainingTime=', remainingTime);
+  
     startButton.disabled = true;  // startボタンをインアクティブにする
     pauseButton.disabled = false; // pauseボタンをアクティブにする
     skipButton.disabled = false;  // skipボタンをアクティブにする
-    updateTimerDisplay();
-    if (!currentTimerType || remainingTime <= 0) {
-      console.error("Timer is not properly prepared!");
-      return;
+  
+    if (isPaused) {
+      // 一時停止後に再開
+      startTime = Date.now() - elapsedTime;  // 再開する時の開始時間
+      isPaused = false;  // 一時停止状態を解除
+    } else {
+      // 初めてタイマーを開始する場合
+      startTime = Date.now();
     }
-
-    // 1秒ごとに実行
+  
+    // タイマーの更新
     timer = setInterval(() => {
-      remainingTime -= 1000; // 1秒減少
-
-      // タイマーの表示更新
-      updateTimerDisplay();
+      elapsedTime = Date.now() - startTime;  // 経過時間を更新
+      remainingTime = Math.max(0, preparedDuration - elapsedTime);  // 残り時間を更新
+      updateTimerDisplay();  // タイマーの表示を更新
+  
       // タイマー終了処理
       if (remainingTime <= 0) {
         clearInterval(timer);
@@ -130,16 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
         finishTimer();
         currentTimerType = null; // 状態リセット
       }
-    }, 990); // 1秒間隔
+    }, 990); // 1秒間隔で更新
   };
 
-  // イベントリスナーの設定
-  // Workタイマーの処理
+  // startボタンでタイマーを開始
   startButton.addEventListener("click", () => {
-    skipButton.disabled = false;
     startTimer();
   });
 
+  // pauseボタンでタイマーを一時停止
+  pauseButton.addEventListener("click", () => {
+    console.log('Pause button clicked!');
+    pauseTimer();
+  });
+
+  // skipボタンで現在のタイマーを終わらせる
   skipButton.addEventListener('click', () => {
     console.log('Skip button clicked!');
     finishTimer();
@@ -169,6 +185,14 @@ document.addEventListener('DOMContentLoaded', () => {
     prepareTimer("rest", 5 * 60 * 1000); // 5分のRest Timer
     startTimer();
   }); 
+
+  // タイマーを一時停止する関数
+  const pauseTimer = () => {
+    clearInterval(timer);
+    isPaused = true;
+    startButton.disabled = false;
+    pauseButton.disabled = true;
+  };
 
   // TimeEntriesを取得する関数
   const fetchTimeEntries = async () => {
