@@ -292,9 +292,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setTimerDisplay(Time){
+    let timeRemainingText;
     const minutes = Math.floor(Time / 60000);
     const seconds = Math.floor((Time % 60000) / 1000);
-    timeRemaining.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    timeRemainingText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    timeRemaining.textContent = timeRemainingText;
+    document.title = `${timeRemainingText} - Pomodoro Timer`;
   }
 
   // 初期ロード
