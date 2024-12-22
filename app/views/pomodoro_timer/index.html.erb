@@ -8,30 +8,33 @@
 
 
 <h1>Pomodoro Timer</h1>
-<p>
-  <strong>Issue:</strong> <%= @issue.subject %> (<%= @issue.id %>)<br>
-  <strong>Project:</strong> <%= @issue.project.name %>
-</p>
-
+<div class="pomo-title-wrapper">
+  <div class="pomo-title">
+      <strong>プロジェクト:</strong> <%= @issue.project.name %> <br>
+      <strong>チケット:</strong> #<%= @issue.id %> <%= @issue.subject %> <br>
+  </div>
+</div>
 <p>
   <span id="session-type">Work</span>
   <span id="time-remaining">25:00</span>
 </p>
 
-<div>
-  <button type="button" id="start-timer" class="button">Start</button>
-  <button type="button" id="pause-timer" class="button" disabled>Pause</button>
-  <button type="button" id="skip-timer" class="button" disabled>Skip</button>
-</div>
-
-<div>
-  <!-- 作業分類選択 -->
-  <label for="activity">Activity:</label>
-  <select id="activity">
-    <% @activities.each do |activity| %>
-      <option value="<%= activity[:id] %>"><%= activity[:name] %></option>
-    <% end %>
-  </select>
+<div class="activity-row">
+  <%# <div class="activity-row-left" > %>
+    <!-- 作業分類選択 -->
+    <label for="activity">作業分類:</label>
+    <select id="activity" class="activity">
+      <% @activities.each do |activity| %>
+        <option value="<%= activity[:id] %>"><%= activity[:name] %></option>
+      <% end %>
+    </select>
+  <%# </div> %>
+  <div class="activity-row-right">
+    <%= raw File.read(Rails.root.join('public/plugin_assets/redmine_pomodoro_timer/images/icons/play.svg')) %>
+    <%= raw File.read(Rails.root.join('public/plugin_assets/redmine_pomodoro_timer/images/icons/pause.svg')) %>
+    <%= raw File.read(Rails.root.join('public/plugin_assets/redmine_pomodoro_timer/images/icons/skip.svg')) %>
+    <%= raw File.read(Rails.root.join('public/plugin_assets/redmine_pomodoro_timer/images/icons/stop.svg')) %>
+  </div>
 </div>
 
 <div class="comments-container">

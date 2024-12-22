@@ -1,0 +1,10 @@
+<svg 
+  class="icon-button stop-icon" 
+  width="50" 
+  height="50" 
+  viewBox="0 0 24 24" 
+  xmlns="http://www.w3.org/2000/svg" 
+  title="タイマーを停止し初期状態に戻ります"
+  <%= 'disabled=true' if @is_disabled %> >
+  <rect x="5" y="5" width="14" height="14" fill="currentColor"></rect>
+</svg>

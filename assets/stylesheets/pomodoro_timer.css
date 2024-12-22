@@ -1,3 +1,21 @@
+.pomo-title-wrapper {
+  width: 80%; /* 全体の幅を80%に設定 */
+  margin: 0 auto; /* 自動で左右のマージンを設定して中央寄せ */
+  padding: 20px; /* 内側の余白 */
+  background-color: #f9f9f9; /* 背景色（オプション） */
+  border: 1px solid #ddd; /* 枠線（オプション） */
+  border-radius: 10px; /* 角の丸み（オプション） */
+}
+
+.pomo-title {
+  text-align: left; /* 文字を左寄せ */
+  font-size: 16pt; /* フォントサイズ */
+  margin: 0; /* 余白をリセット */
+}
+.pomo-title strong {
+  font-weight: bold; /* <strong>タグ内のテキストを太字に */
+}
+
 #session-type {
   width: 500px; /* #time-remainingと同じ幅 */
   height: 50px; /* 高さは適宜調整 */
@@ -126,4 +144,81 @@
 
 .time-entry .error {
   color: red;
+}
+
+.activity-row {
+  display: flex;
+  width: 50%; /* 任意の幅 */
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 0 auto; /* 横方向の中央揃え */
+  margin-bottom: 20px;
+  font-size: 13pt;
+  font-weight: bold;
+}
+
+/* 左側の作業分類選択部分 */
+/* .activity-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* ラベルとセレクトボックスの間隔 */
+  /* flex: 1; 左側の幅を自動調整 */ */
+/* } */
+
+.activity-row label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.activity-row .activity {
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 200px; /* セレクトボックスの幅を固定 */
+  line-height: 1.5; /* 行の高さを調整 */
+  height: auto;
+}
+
+/* 右側のアイコンボタン部分 */
+.activity-row-right {
+  display: flex;
+  gap: 15px; /* 各アイコンの間隔 */
+}
+
+/* ボタン風のデザイン */
+.icon-button {
+  display: inline-block; /* アイコンをインラインで表示 */
+  width: 24px;
+  height: 24px;
+  background-color: #628DB6; /* ボタンの背景色 */
+  color: white; /* アイコンの色（白） */
+  padding: 10px; /* ボタンのパディング */
+  border-radius: 5px; /* ボタンの角を丸く */
+  border: none; /* ボーダーを消す */
+  cursor: pointer; /* ポインタカーソル */
+  transition: all 0.3s ease; /* スムーズな遷移効果 */
+}
+
+/* マウスオーバー時に色を変える */
+.icon-button:hover {
+  transform: scale(1.1); /* 拡大効果 */
+  filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.8)); /* 光のぼかし */
+}
+
+/* クリック時に押し込まれる効果 */
+.icon-button:active {
+  transform: scale(0.95); /* ボタンが少し小さくなる */
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2); /* 内側に影を追加 */
+}
+
+.icon-button[disabled] {
+  cursor: not-allowed;
+  background-color: #ccc; /* 無効化時のグレー色 */
+  pointer-events: none; /* マウスイベントを無効化 */
+  transform: none; /* 拡大効果も無効化 */
 }

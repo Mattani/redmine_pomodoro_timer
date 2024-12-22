@@ -1,0 +1,9 @@
+<svg class="icon-button play-icon" 
+  width="50"
+  height="50"
+  viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
+  title="タイマーを開始（再開）します"
+  <%= 'disabled=true' if @is_disabled %> >
+    <path fill="currentColor" d="M8 5v14l11-7z"/>
+</svg>

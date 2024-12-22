@@ -1,0 +1,13 @@
+  <svg 
+    class="icon-button pause-icon" 
+    width="50" 
+    height="50" 
+    viewBox="0 0 24 24" 
+    xmlns="http://www.w3.org/2000/svg" 
+    title="タイマーを一時停止します"
+    <%= 'disabled=true' if @is_disabled %> >
+    <g fill="currentColor">
+      <rect x="6" y="5" width="4" height="14"></rect>
+      <rect x="14" y="5" width="4" height="14"></rect>
+    </g>
+  </svg>

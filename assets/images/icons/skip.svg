@@ -1,0 +1,17 @@
+<svg 
+  class="icon-button skip-icon" 
+  width="50" 
+  height="50" 
+  viewBox="0 0 24 24" 
+  xmlns="http://www.w3.org/2000/svg" 
+  title="現在のタイマーをスキップします"
+  <%= 'disabled=true' if @is_disabled %> >
+  <g fill="currentColor">
+    <!-- 左側の三角形 -->
+    <path d="M5 5v14l7-7z"></path>
+    <!-- 右側の三角形 -->
+    <path d="M12 5v14l7-7z"></path>
+    <!-- 縦棒 -->
+    <rect x="19" y="5" width="2" height="14"></rect>
+  </g>
+</svg>

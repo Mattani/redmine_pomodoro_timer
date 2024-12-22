@@ -2,9 +2,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const baseUrl = document.querySelector('meta[name="base-url"]').content;
-  const startButton = document.getElementById('start-timer');
-  const skipButton = document.getElementById('skip-timer');
-  const pauseButton = document.getElementById('pause-timer');
+  const startButton = document.querySelector('.play-icon');
+  const pauseButton = document.querySelector('.pause-icon');
+  const skipButton = document.querySelector('.skip-icon');
+  const stopButton = document.querySelector('.stop-icon');
   const activitySelect = document.getElementById('activity');
   const commentsInput = document.getElementById('comments');
   const timeRemaining = document.getElementById('time-remaining');
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitButton = document.getElementById("modalSubmitButton");
   const continueButton = document.getElementById("modalContinueButton");
   const cancelButton = document.getElementById("modalCancelButton");
+  const defaultDuration = 25 * 60 * 1000; // 25分
 
   const updateTimerDisplay = () => {
 
@@ -104,7 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
       updateTimerDisplay(false); // Restタイマーの初期画面
       updateSessionType(false);  // Rest Session表示
     }
-    startButton.disabled = false; // Startボタンをアクティブにする
+    startButton.removeAttribute('disabled'); // Startボタンをアクティブにする
+    pauseButton.setAttribute('disabled',true); // Pauseボタンをインアクティブにする
+    skipButton.setAttribute('disabled',true); // Skipボタンをインアクティブにする
+    stopButton.setAttribute('disabled',true); // Skipボタンをインアクティブにする
   };
 
   /**
@@ -115,9 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('isPaused=', isPaused);
     console.log('remainingTime=', remainingTime);
   
-    startButton.disabled = true;  // startボタンをインアクティブにする
-    pauseButton.disabled = false; // pauseボタンをアクティブにする
-    skipButton.disabled = false;  // skipボタンをアクティブにする
+    startButton.setAttribute('disabled',true);  // Startボタンをインアクティブにする
+    pauseButton.removeAttribute('disabled');    // Pauseボタンをアクティブにする
+    skipButton.removeAttribute('disabled');  // Skipボタンをアクティブにする
+    stopButton.removeAttribute('disabled');  // Skipボタンをアクティブにする
   
     if (isPaused) {
       // 一時停止後に再開
@@ -161,6 +167,19 @@ document.addEventListener('DOMContentLoaded', () => {
     finishTimer();
   });
 
+  // stopボタンでタイマーを終わらせ、初期画面に戻る
+  stopButton.addEventListener('click', () => {
+    console.log('Stop button clicked!');
+    const isConfirmed = confirm("中断してよろしいですか？");
+    if (isConfirmed) {
+      console.log("timer stopped by user");
+      prepareTimer("work", defaultDuration);
+    } else {
+      // キャンセルが選ばれた場合の処理
+      console.log("stop canceled by user");
+    }
+  });
+
   // ModalのSubmitでコメントを送信し、その後Rest Timerを開始する
   submitButton.addEventListener("click", () => {
     console.log('Submit button clicked!');
@@ -190,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const pauseTimer = () => {
     clearInterval(timer);
     isPaused = true;
-    startButton.disabled = false;
-    pauseButton.disabled = true;
+    startButton.removeAttribute('disabled');
+    pauseButton.setAttribute('disabled',true);
   };
 
   // TimeEntriesを取得する関数
@@ -302,7 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 初期ロード
   // タイマー関連の処理
-  const defaultDuration = 25 * 60 * 1000; // 25分
   fetchTimeEntries();
   prepareTimer("work", defaultDuration);
 });
