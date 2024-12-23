@@ -1,4 +1,4 @@
-# Redmine Pomodoro_Timer Plugin
+# Redmine Pomodoro Timer Plugin
 
 このプラグインは、ポモドーロテクニックのタイマー機能をRedmineに追加します。タイマーで測定されたポモドーロセッションの時間は、Redmineのissueの作業時間として登録されます。
 
