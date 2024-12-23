@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('isPaused=', isPaused);
     console.log('remainingTime=', remainingTime);
   
+    playSound('start');
     startButton.setAttribute('disabled',true);  // Startボタンをインアクティブにする
     pauseButton.removeAttribute('disabled');    // Pauseボタンをアクティブにする
     skipButton.removeAttribute('disabled');  // Skipボタンをアクティブにする
@@ -170,14 +171,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // stopボタンでタイマーを終わらせ、初期画面に戻る
   stopButton.addEventListener('click', () => {
     console.log('Stop button clicked!');
-    const isConfirmed = confirm("中断してよろしいですか？");
-    if (isConfirmed) {
-      console.log("timer stopped by user");
-      prepareTimer("work", defaultDuration);
-    } else {
-      // キャンセルが選ばれた場合の処理
-      console.log("stop canceled by user");
-    }
+    playSound('stop')
+    .then(() => {
+      const isConfirmed = confirm("中断してよろしいですか？");
+      if (isConfirmed) {
+        console.log("Timer stopped by user");
+        prepareTimer("work", defaultDuration); // 事前に定義されている必要があります
+      } else {
+        // キャンセルが選ばれた場合の処理
+        console.log("Stop canceled by user");
+      }
+    })
+    .catch(error => {
+        console.error("Error playing sound:", error);
+    });
   });
 
   // ModalのSubmitでコメントを送信し、その後Rest Timerを開始する
@@ -208,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // タイマーを一時停止する関数
   const pauseTimer = () => {
     clearInterval(timer);
+    playSound('pause');
     isPaused = true;
     startButton.removeAttribute('disabled');
     pauseButton.setAttribute('disabled',true);
@@ -272,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function finishTimer(){
     console.log("finishTimer invoked")
     console.log("currentTimerType=",currentTimerType);
+    playSound('time-up');
     clearInterval(timer);
     if (currentTimerType === "work") {
       console.log("Work session completed!");
@@ -318,6 +327,29 @@ document.addEventListener('DOMContentLoaded', () => {
     timeRemaining.textContent = timeRemainingText;
     document.title = `${timeRemainingText} - Pomodoro Timer`;
   }
+
+// 効果音を再生する関数 (Promiseを返す)
+function playSound(filename) {
+  return new Promise((resolve, reject) => {
+      // 音声ファイルのURLを組み立て
+      console.log(`play sound:${filename}`);
+      const soundPath = `${baseUrl}/plugin_assets/redmine_pomodoro_timer/sounds/${filename}.mp3`;
+
+      // Audioオブジェクトを作成
+      const audio = new Audio(soundPath);
+
+      // 再生成功時
+      audio.play()
+          .then(() => {
+              resolve(`Sound played successfully: ${soundPath}`);
+          })
+          .catch(error => {
+              console.error(`Failed to play sound: ${soundPath}`, error);
+              reject(error);
+          });
+  });
+}
+
 
   // 初期ロード
   // タイマー関連の処理
